@@ -7,6 +7,7 @@ from app.serializers import UserSerializer
 from app.serializers import LoginSerializer
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import AccessToken
 
 # Create your views here.
 
@@ -22,6 +23,9 @@ class UserSignup(CreateView):
 
             if User.objects.get(username=user_data.validated_data["username"]).exists():
                 return JsonResponse({'error': "User with this username already exists"}, status=400)
+            
+            else:
+                return JsonResponse({'success':True, 'message':'user successfully created'},status=200)
         
         else:
             return JsonResponse(user_data.errors, status=400)
@@ -44,7 +48,13 @@ class UserLogin(LoginView):
 
             user=authenticate(request,username=username, password=password)
             if user is not None:
-                pass
+                access_token=AccessToken.for_user(user)
+                return JsonResponse({'success':True,'access_token':str(access_token),'user_id':user.id},status=200)
+            
+            else:
+                return JsonResponse({'success':False,'message':'invalid username or password'},status=401)
+        else:
+            return JsonResponse({'success':False,'message':'invalid data'},status=400)
 
     def get_success_url(self) -> str:
         return self.success_url
