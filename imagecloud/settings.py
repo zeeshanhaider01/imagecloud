@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import cloudinary
 
+AUTH_USER_MODEL='app.User'
+
 cloudinary.config(
     cloud_name="ds6tqyxr6",
     api_key="471587398643489",
